@@ -1,25 +1,26 @@
 package com.example.appclock
 
+import android.R.attr.level
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
-import android.view.Window
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.appclock.databinding.ActivityMainBinding
 
 
 class MainActivity() : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    var isChecked = true
+    var batteryLvl = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,13 +41,44 @@ class MainActivity() : AppCompatActivity() {
                 if (intent != null && intent.action == Intent.ACTION_BATTERY_CHANGED) {
                     val levelBattery = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                     val bLevel = levelBattery.toString()
-                    Toast.makeText(applicationContext, "Battery Level", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(applicationContext, "$bLevel %" , Toast.LENGTH_SHORT).show()
+                    batteryLvl = bLevel
+
                 }
             }
         }
 
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+
+        binding.checkBoxBattery.setOnClickListener {
+            if (isChecked) {
+                isChecked = false
+                binding.textBattery.visibility = View.GONE
+
+            } else {
+                isChecked = true
+                binding.textBattery.visibility = View.VISIBLE
+
+
+                if (intent != null) {
+                    batteryLvl
+                    binding.textBattery.text = "$batteryLvl %"
+                }
+
+            }
+            binding.checkBoxBattery.isChecked = isChecked
+        }
+
+        binding.icClose.setOnClickListener {
+            binding.checkBoxBattery.visibility=View.GONE
+            binding.textBatteryLevel.visibility=View.GONE
+            binding.icClose.visibility=View.GONE
+        }
+
+        binding.icMenu.setOnClickListener {
+            binding.checkBoxBattery.visibility=View.VISIBLE
+            binding.textBatteryLevel.visibility=View.VISIBLE
+            binding.icClose.visibility=View.VISIBLE
+        }
 
     }
 }
